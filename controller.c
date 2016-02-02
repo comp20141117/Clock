@@ -176,6 +176,44 @@ void flash()
 
 void timer_int()
 {
+  static int key_b_time=0;
+  if(key_b==1)
+    key_b_time++;
+  else
+    key_b_time=0;
+  if(key_b_time>=40 && flag!=0)
+    {
+      switch(flag)
+	{
+	  case 1:
+	    minute++;
+	    if(minute>59)
+	      minute=0;
+	    title_to_time();
+	    break;
+	  case 2:
+	    hour++;
+	    if(hour>23)
+	      hour=0;
+	    title_to_time();
+	    break;
+	  case 3:
+	    month++;
+	    if(month>12)
+	      month=1;
+	    title_to_date();
+	    break;
+	  case 4:
+	    day++;
+	    if(day>month_num_days[month-1])
+	      day=1;
+	    title_to_date();
+	    break;
+	  default:
+	    break;      
+	  }
+    }
+    
   timer_go();
   
   if(flag == 0 && key_b==1)
@@ -238,6 +276,7 @@ void timer_int()
 	    break;      
 	  }
     }
+
 }
 
 
