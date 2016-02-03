@@ -1,4 +1,3 @@
-#include "global.h"
 #include "controller.h"
 #include "model.h"
 #include "view.h"
@@ -56,9 +55,10 @@ void timer()
 		second = 0;
 		increase(1);
 	}
-	if(increase_carry) { increase(2); }
-	if(increase_carry) { increase(4); }
 	if(increase_carry) { increase(3); }
+	if(increase_carry) { increase(2); }
+       	if(increase_carry) { increase(4); }
+	//if(increase_carry) { increase(3); }
 }
 
 void title_to_time()
@@ -95,7 +95,10 @@ int flash_hidden = 0;
 void flash()
 {
 	if (divider % 5 == 0) {
-		flash_hidden = !flash_hidden;
+	        if(key_b==1)
+		        flash_hidden=0;
+		else
+		        flash_hidden = !flash_hidden;
 	}
 	if(flash_hidden) {
 		if(flag == 1 || flag == 4) {
@@ -149,7 +152,7 @@ void timer_int()
 
 	else
 		key_b_time = 0;
-	if (key_b_time >= 40 && flag != 0) {
+	if (key_b_time >= 40 && flag != 0 && key_b_time%4==0) {
 		increase(flag);
 	}
 
@@ -168,7 +171,20 @@ void timer_int()
 	else {
 		if(flag == 1 || flag == 2) {
 			colon = 1;
-			title_to_time();
+		       	if(flag == 1)
+			        title_to_time();
+			else{
+			        digit2 = hour % 10;
+	                        digit1 = hour / 10;
+				if(hour>=12){
+				          digit3='P';
+				          digit4=' ';
+				}
+				else{
+				          digit3='A';
+				          digit4=' ';
+				}
+				}
 		}
 		else {
 			colon = 0;
