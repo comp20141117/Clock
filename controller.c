@@ -7,48 +7,25 @@ int key_a = 0;
 int key_b = 0;
 int divider = 0;
 static int flag = 0;
+// 0 --> NORMAL
+// 1 --> MIN
+// 2 --> HOUR
+// 3 --> MONTH
+// 4 --> DAY
+
 void timer_to_title();
 int A();
 int B();
 void timer();
-void digit_time();
-void digit_date();
 void title_to_time();
 void title_to_date();
 void flash();
-void timer_to_title()
-{
-	switch (flag) {
-	case 2:
-		if (digit4 != ' ')
-			minute = digit4 + digit3 * 10;
-		break;
-	case 3:
-		if (digit2 != ' ')
-			hour = digit2 + digit1 * 10;
-		break;
-	case 4:
-		if (digit4 != ' ') {
-			if (digit3 == ' ')
-				day = digit4;
 
-			else
-				day = digit4 + digit3 * 10;
-		}
-		break;
-	case 0:
-		if (digit2 != ' ') {
-			if (digit1 == ' ')
-				month = digit2;
+// timer_go() ---call---> timer()
+//     timer_go: the CLK divider
+//     timer:    actually modify the model
 
-			else
-				month = digit2 + digit1 * 10;
-		}
-		break;
-	case 1:
-		break;
-	}
-}
+// title_to_time(), title_to_date(): push model to view
 
 int A()
 {
@@ -219,7 +196,6 @@ void timer_int()
 		flag++;
 		if (flag > 4)
 			flag = 0;
-		timer_to_title();
 	}
 	if (B()) {
 		switch (flag) {
