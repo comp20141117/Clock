@@ -5,6 +5,7 @@
 int key_a = 0;
 int key_b = 0;
 int divider = 0;
+int Hour=0;
 static int flag = 0;
 // 0 --> NORMAL
 // 1 --> MIN
@@ -55,10 +56,10 @@ void timer()
 		second = 0;
 		increase(1);
 	}
-	if(increase_carry) { increase(3); }
+	increase_carry=0;
 	if(increase_carry) { increase(2); }
        	if(increase_carry) { increase(4); }
-	//if(increase_carry) { increase(3); }
+	if(increase_carry) { increase(3); }
 }
 
 void title_to_time()
@@ -124,10 +125,12 @@ void increase(int which)
 		}
 		break;
 	case 2:
-		if (++hour > 23) {
-			hour = 0;
+		if (++hour > 12) {
+			hour = 1;
 			increase_carry = 1;
 		}
+		if (++Hour > 23)
+		        Hour=0;
 		break;
 	case 3:
 		if (++month > 12) {
@@ -176,7 +179,7 @@ void timer_int()
 			else{
 			        digit2 = hour % 10;
 	                        digit1 = hour / 10;
-				if(hour>=12){
+				if(Hour>=12){
 				          digit3='P';
 				          digit4=' ';
 				}
