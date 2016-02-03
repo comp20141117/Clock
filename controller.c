@@ -13,13 +13,14 @@ static int flag = 0;
 // 3 --> MONTH
 // 4 --> DAY
 
-void timer_to_title();
 int A();
 int B();
 void timer();
 void title_to_time();
 void title_to_date();
 void flash();
+extern int increase_carry;
+void increase(int which);
 
 // timer_go() ---call---> timer()
 //     timer_go: the CLK divider
@@ -53,22 +54,11 @@ void timer()
 {
 	if (second >= 60) {
 		second = 0;
-		minute++;
+		increase(1);
 	}
-	if (minute >= 60) {
-		minute = 0;
-		hour++;
-	}
-	if (hour >= 24) {
-		hour = 0;
-		day++;
-	}
-	if (day > month_num_days[month - 1]) {
-		day = 1;
-		month++;
-	}
-	if (month > 12)
-		month = 1;
+	if(increase_carry) { increase(2); }
+	if(increase_carry) { increase(4); }
+	if(increase_carry) { increase(3); }
 }
 
 void title_to_time()
@@ -100,42 +90,66 @@ void timer_go()
 	}
 }
 
+int flash_hidden = 0;
+
 void flash()
 {
-	colon = 1;
 	if (divider % 5 == 0) {
+		flash_hidden = !flash_hidden;
+	}
+	if(flash_hidden) {
 		switch (flag) {
 		case 1:
 			if (digit4 != ' ')
 				digit4 = digit3 = ' ';
-
-			else
-				title_to_time();
 			break;
 		case 2:
 			if (digit2 != ' ')
 				digit1 = digit2 = ' ';
-
-			else
-				title_to_time();
 			break;
 		case 3:
 			if (digit2 != ' ')
 				digit2 = digit1 = ' ';
-
-			else
-				title_to_date();
 			break;
 		case 4:
 			if (digit4 != ' ')
 				digit4 = digit3 = ' ';
-
-			else
-				title_to_date();
-			break;
-		default:
 			break;
 		}
+	}
+}
+
+int increase_carry;
+
+void increase(int which)
+{
+	increase_carry = 0;
+
+	switch (which) {
+	case 1:
+		if (++minute > 59) {
+			minute = 0;
+			increase_carry = 1;
+		}
+		break;
+	case 2:
+		if (++hour > 23) {
+			hour = 0;
+			increase_carry = 1;
+		}
+		break;
+	case 3:
+		if (++month > 12) {
+			month = 1;
+			increase_carry = 1;
+		}
+		break;
+	case 4:
+		if (++day > month_num_days[month - 1]) {
+			day = 1;
+			increase_carry = 1;
+		}
+		break;
 	}
 }
 
@@ -148,85 +162,39 @@ void timer_int()
 	else
 		key_b_time = 0;
 	if (key_b_time >= 40 && flag != 0) {
-		switch (flag) {
-		case 1:
-			minute++;
-			if (minute > 59)
-				minute = 0;
-			title_to_time();
-			break;
-		case 2:
-			hour++;
-			if (hour > 23)
-				hour = 0;
-			title_to_time();
-			break;
-		case 3:
-			month++;
-			if (month > 12)
-				month = 1;
-			title_to_date();
-			break;
-		case 4:
-			day++;
-			if (day > month_num_days[month - 1])
-				day = 1;
-			title_to_date();
-			break;
-		default:
-			break;
-		}
-	}
-	timer_go();
-	if (flag == 0 && key_b == 1) {
-		title_to_date();
-		colon = 0;
+		increase(flag);
 	}
 
-	else if (flag == 0) {
-		title_to_time();
-		if (divider % 10 == 0)
-			colon = !colon;
+	timer_go();
+	if (flag == 0) {
+		if(key_b == 1) {
+			title_to_date();
+			colon = 0;
+		}
+		else {
+			title_to_time();
+			if (divider % 10 == 0)
+				colon = !colon;
+		}
 	}
-	if (flag != 0)
+	else {
+		if(flag == 1 || flag == 2) {
+			colon = 1;
+			title_to_time();
+		}
+		else {
+			colon = 0;
+			title_to_date();
+		}
 		flash();
-	if (flag == 3 || flag == 4)
-		colon = 0;
+	}
+
 	if (A()) {
-		flag++;
-		if (flag > 4)
+		if (++flag > 4) {
 			flag = 0;
+		}
 	}
 	if (B()) {
-		switch (flag) {
-		case 0:
-			break;
-		case 1:
-			minute++;
-			if (minute > 59)
-				minute = 0;
-			title_to_time();
-			break;
-		case 2:
-			hour++;
-			if (hour > 23)
-				hour = 0;
-			title_to_time();
-			break;
-		case 3:
-			month++;
-			if (month > 12)
-				month = 1;
-			title_to_date();
-			break;
-		case 4:
-			day++;
-			if (day > month_num_days[month - 1])
-				day = 1;
-			title_to_date();
-			break;
-		default:
-			break;
-		}
+		increase(flag);
 	}
 }
