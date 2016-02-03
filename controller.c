@@ -98,23 +98,11 @@ void flash()
 		flash_hidden = !flash_hidden;
 	}
 	if(flash_hidden) {
-		switch (flag) {
-		case 1:
-			if (digit4 != ' ')
-				digit4 = digit3 = ' ';
-			break;
-		case 2:
-			if (digit2 != ' ')
-				digit1 = digit2 = ' ';
-			break;
-		case 3:
-			if (digit2 != ' ')
-				digit2 = digit1 = ' ';
-			break;
-		case 4:
-			if (digit4 != ' ')
-				digit4 = digit3 = ' ';
-			break;
+		if(flag == 1 || flag == 4) {
+			digit4 = digit3 = ' ';
+		}
+		else {
+			digit2 = digit1 = ' ';
 		}
 	}
 }
