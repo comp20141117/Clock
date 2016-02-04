@@ -16,8 +16,8 @@ int A();
 int B();
 void timer();
 void title_to_time();
-void title_to_date();
-void flash();
+void display_date();
+void blink();
 extern int increase_carry;
 void increase(int which);
 
@@ -25,7 +25,7 @@ void increase(int which);
 //     timer_go: the CLK divider
 //     timer:    actually modify the model
 
-// title_to_time(), title_to_date(): push model to view
+// title_to_time(), display_date(): push model to view
 
 int A()
 {
@@ -66,7 +66,7 @@ int hide_zero(int n)
 	return (n == 0) ? ' ' : n;
 }
 
-void title_to_time()
+void display_time()
 {
 	int hour2 = ((hour % 12) == 0) ? 12 : (hour % 12);
 
@@ -76,7 +76,7 @@ void title_to_time()
 	digit1 = hide_zero(hour2 / 10);
 }
 
-void title_to_date()
+void display_date()
 {
 	digit4 = day % 10;
 	digit3 = hide_zero(day / 10);
@@ -93,17 +93,17 @@ void timer_go()
 	}
 }
 
-int flash_hidden = 0;
+int blink_hidden = 0;
 
-void flash()
+void blink()
 {
 	if (divider % 5 == 0) {
 	        if(key_b==1)
-		        flash_hidden=0;
+		        blink_hidden=0;
 		else
-		        flash_hidden = !flash_hidden;
+		        blink_hidden = !blink_hidden;
 	}
-	if(flash_hidden) {
+	if(blink_hidden) {
 		if(flag == 1 || flag == 4) {
 			digit4 = digit3 = ' ';
 		}
@@ -162,11 +162,11 @@ void timer_int()
 	timer_go();
 	if (flag == 0) {
 		if(key_b == 1) {
-			title_to_date();
+			display_date();
 			colon = 0;
 		}
 		else {
-			title_to_time();
+			display_time();
 			if (divider % 10 == 0)
 				colon = !colon;
 		}
@@ -174,7 +174,7 @@ void timer_int()
 	else {
 		if(flag == 1 || flag == 2) {
 			colon = 1;
-			title_to_time();
+			display_time();
 			
 			if(flag == 2) {
 				digit3 = (hour >= 12) ? 'P' : 'A';
@@ -183,9 +183,9 @@ void timer_int()
 		}
 		else {
 			colon = 0;
-			title_to_date();
+			display_date();
 		}
-		flash();
+		blink();
 	}
 
 	if (A()) {
