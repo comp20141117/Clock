@@ -55,7 +55,6 @@ void timer()
 		second = 0;
 		increase(1);
 	}
-	increase_carry=0;
 	if(increase_carry) { increase(2); }
        	if(increase_carry) { increase(4); }
 	if(increase_carry) { increase(3); }
@@ -94,14 +93,20 @@ void timer_go()
 }
 
 int blink_hidden = 0;
+int blink_timer;
+
+void blink_reset()
+{
+	blink_timer = 0;
+	blink_hidden = 0;
+}
 
 void blink()
 {
-	if (divider % 5 == 0) {
-	        if(key_b==1)
-		        blink_hidden=0;
-		else
-		        blink_hidden = !blink_hidden;
+	blink_timer++;
+	if(blink_timer == 5) {
+		blink_timer = 0;
+		blink_hidden = !blink_hidden;
 	}
 	if(blink_hidden) {
 		if(flag == 1 || flag == 4) {
@@ -147,16 +152,32 @@ void increase(int which)
 	}
 }
 
+int fast_inc_enabled = 0;
+int fast_inc_timer1 = 0;
+int fast_inc_timer2 = 0;
+
 void timer_int()
 {
-	static int key_b_time = 0;
-	if (key_b == 1)
-		key_b_time++;
-
-	else
-		key_b_time = 0;
-	if (key_b_time >= 40 && flag != 0 && key_b_time%4==0) {
-		increase(flag);
+	if(fast_inc_enabled) {
+		if(key_b == 0) {
+			fast_inc_enabled = 0;
+		}
+		else if(++fast_inc_timer2 >= 2) {
+			fast_inc_timer2 = 0;
+			increase(flag);
+		}
+	}
+	else {
+		if (key_b == 1) {
+			if(++fast_inc_timer1 >= 20) {
+				fast_inc_timer1 = 0;
+				fast_inc_timer2 = 0;
+				fast_inc_enabled = 1;
+			}
+		}
+		else {
+			fast_inc_timer1 = 0;
+		}
 	}
 
 	timer_go();
@@ -185,7 +206,12 @@ void timer_int()
 			colon = 0;
 			display_date();
 		}
-		blink();
+		if(key_b == 1) {
+			blink_reset();
+		}
+		else {
+			blink();
+		}
 	}
 
 	if (A()) {
