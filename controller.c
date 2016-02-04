@@ -5,7 +5,6 @@
 int key_a = 0;
 int key_b = 0;
 int divider = 0;
-int Hour=0;
 static int flag = 0;
 // 0 --> NORMAL
 // 1 --> MIN
@@ -62,24 +61,27 @@ void timer()
 	if(increase_carry) { increase(3); }
 }
 
+int hide_zero(int n)
+{
+	return (n == 0) ? ' ' : n;
+}
+
 void title_to_time()
 {
+	int hour2 = ((hour % 12) == 0) ? 12 : (hour % 12);
+
 	digit4 = minute % 10;
 	digit3 = minute / 10;
-	digit2 = hour % 10;
-	digit1 = hour / 10;
+	digit2 = hour2 % 10;
+	digit1 = hide_zero(hour2 / 10);
 }
 
 void title_to_date()
 {
 	digit4 = day % 10;
-	digit3 = day / 10;
+	digit3 = hide_zero(day / 10);
 	digit2 = month % 10;
-	digit1 = month / 10;
-	if (digit3 == 0)
-		digit3 = ' ';
-	if (digit1 == 0)
-		digit1 = ' ';
+	digit1 = hide_zero(month / 10);
 }
 
 void timer_go()
@@ -125,12 +127,10 @@ void increase(int which)
 		}
 		break;
 	case 2:
-		if (++hour > 12) {
-			hour = 1;
+		if (++hour > 23) {
+			hour = 0;
 			increase_carry = 1;
 		}
-		if (++Hour > 23)
-		        Hour=0;
 		break;
 	case 3:
 		if (++month > 12) {
@@ -174,20 +174,12 @@ void timer_int()
 	else {
 		if(flag == 1 || flag == 2) {
 			colon = 1;
-		       	if(flag == 1)
-			        title_to_time();
-			else{
-			        digit2 = hour % 10;
-	                        digit1 = hour / 10;
-				if(Hour>=12){
-				          digit3='P';
-				          digit4=' ';
-				}
-				else{
-				          digit3='A';
-				          digit4=' ';
-				}
-				}
+			title_to_time();
+			
+			if(flag == 2) {
+				digit3 = (hour >= 12) ? 'P' : 'A';
+				digit4 = ' ';
+			}
 		}
 		else {
 			colon = 0;
