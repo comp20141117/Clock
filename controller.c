@@ -1,3 +1,4 @@
+// -*- mode: c; c-file-style: linux -*-
 #include "controller.h"
 #include "model.h"
 #include "view.h"
